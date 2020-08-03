@@ -18,12 +18,18 @@ import { ToyReact, Component } from './ToyReact';
 // }
 
 class Square extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: null,
+    };
+  }
+
   render() {
     return (
       <button
         className="square"
-        onClick={() => alert('click')}
-        onEditThis={() => alert('test')}
+        onClick={() => this.setState({value: 'X'})}
       >
         {this.props.value}
       </button>
