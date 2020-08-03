@@ -20,7 +20,11 @@ import { ToyReact, Component } from './ToyReact';
 class Square extends Component {
   render() {
     return (
-      <button className="square">
+      <button
+        className="square"
+        onClick={() => alert('click')}
+        onEditThis={() => alert('test')}
+      >
         {this.props.value}
       </button>
     );
@@ -54,7 +58,6 @@ class Board extends Component {
     );
   }
 }
-
 
 let a = <Board />;
 
