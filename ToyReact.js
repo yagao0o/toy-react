@@ -1,6 +1,14 @@
 export let ToyReact = {
   createElement(type, attributes, ...children) {
-      console.log(arguments);
-      return document.createElement(type);
-  }
+    let element = document.createElement(type);
+    console.log(arguments);
+    for (let name in attributes) {
+        // element[name] = attributes[name] // 错误，需要和HTML保持一致
+        element.setAttribute(name, attributes[name]);
+    }
+    for(let child of children){
+        element.appendChild(child);
+    }
+    return element;
+  },
 };
