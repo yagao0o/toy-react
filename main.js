@@ -1,14 +1,25 @@
 import { ToyReact } from './ToyReact';
 
-class MyComponent {}
+class MyComponent {
+  render() {
+    return (
+      <div>
+        <span>Hello </span>
+        <span>world </span>
+        <span>!</span>
+      </div>
+    );
+  }
+  setAttribute(name, value) {
+    this[name] = value;
+  }
 
-let a = <div name="a" id="ida">
-    <span>Hello </span>
-    <span>World </span>
-    <span>!</span>
-</div>;
+  mountTo(parent) {
+    let vdom = this.render();
+    vdom.mountTo(parent);
+  }
+}
 
-ToyReact.render(
-    a,
-    document.body
-);
+let a = <MyComponent name="a" id="ida"></MyComponent>;
+
+ToyReact.render(a, document.body);
