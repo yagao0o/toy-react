@@ -18,6 +18,9 @@ class MyComponent extends Component {
 
 let a = <MyComponent name="a" id="ida">
     <div>Good!</div>
+    <MyComponent name="b" id="idb">
+        <span>inside</span>
+    </MyComponent>
 </MyComponent>;
 
 ToyReact.render(a, document.body);
