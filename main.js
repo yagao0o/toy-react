@@ -1,8 +1,9 @@
 import { ToyReact } from './ToyReact';
 
-class MyComponent {
-    
-}
+class MyComponent {}
 
-let a = <MyComponent name="a" />;
-
+let a = <div name="a" id="ida">
+    <span>Hello </span>
+    <span>World </span>
+    <span>!</span>
+</div>;

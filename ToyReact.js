@@ -1,5 +1,6 @@
 export let ToyReact = {
-  createElement() {
+  createElement(type, attributes, ...children) {
       console.log(arguments);
+      return document.createElement(type);
   }
 };
