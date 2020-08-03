@@ -25,9 +25,11 @@ class TextWrapper {
 export class Component {
   constructor() {
     this.children = [];
+    this.props = Object.create(null);
   }
 
   setAttribute(name, value) {
+    this.props[name] = value;
     this[name] = value;
   }
 
