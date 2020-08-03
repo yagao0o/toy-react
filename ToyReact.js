@@ -23,6 +23,10 @@ class TextWrapper {
 }
 
 export class Component {
+  constructor() {
+    this.children = [];
+  }
+
   setAttribute(name, value) {
     this[name] = value;
   }
@@ -30,6 +34,10 @@ export class Component {
   mountTo(parent) {
     let vdom = this.render();
     vdom.mountTo(parent);
+  }
+
+  appendChild(vchild) {
+    this.children.push(vchild);
   }
 }
 
@@ -46,12 +54,20 @@ export let ToyReact = {
       // element[name] = attributes[name] // 错误，需要和HTML保持一致
       element.setAttribute(name, attributes[name]);
     }
-    for (let child of children) {
-      if (typeof child === 'string') {
-        child = new TextWrapper(child);
+    let insertChildren = (children) => {
+      for (let child of children) {
+        if (typeof child === 'string') {
+          child = new TextWrapper(child);
+        }
+        if (typeof child === 'object' && child instanceof Array) {
+          insertChildren(child);
+        } else {
+          element.appendChild(child);
+        }
       }
-      element.appendChild(child);
-    }
+    };
+    insertChildren(children);
+
     return element;
   },
   render(vdom, element) {
