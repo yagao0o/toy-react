@@ -7,5 +7,8 @@ let a = <div name="a" id="ida">
     <span>World </span>
     <span>!</span>
 </div>;
-console.log(a);
-document.body.appendChild(a);
+
+ToyReact.render(
+    a,
+    document.body
+);

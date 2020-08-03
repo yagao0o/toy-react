@@ -14,4 +14,7 @@ export let ToyReact = {
     }
     return element;
   },
+  render(vdom, element) {
+      element.appendChild(vdom);
+  }
 };
