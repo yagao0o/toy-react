@@ -22,13 +22,24 @@ class TextWrapper {
   }
 }
 
+export class Component {
+  setAttribute(name, value) {
+    this[name] = value;
+  }
+
+  mountTo(parent) {
+    let vdom = this.render();
+    vdom.mountTo(parent);
+  }
+}
+
 export let ToyReact = {
   createElement(type, attributes, ...children) {
     let element;
     if (typeof type === 'string') {
       element = new ElementWrapper(type);
     } else {
-      element = new type;
+      element = new type();
     }
     console.log(arguments);
     for (let name in attributes) {
