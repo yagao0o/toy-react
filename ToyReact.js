@@ -62,8 +62,6 @@ export class Component {
     range.setStart(this.range.endContainer, this.range.endOffset);
     range.setEnd(this.range.endContainer, this.range.endOffset);
     range.insertNode(placeholder);
-    this.range.deleteContents();
-    
     let vdom = this.render();
     vdom.mountTo(this.range);
   }
