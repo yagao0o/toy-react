@@ -34,4 +34,29 @@ react = 组件化 + jsx + vdom
 
 ## 第二节 为toy-react添加生命周期
 
+P.S. 开课吧 - 《前段会客厅》，免费的。
+
+1. 上节课的版本，仅仅一次渲染，不能更新。
+2. 参考 [React的tutorial](https://reactjs.org/tutorial/tutorial.html),我们要用我们的代码实现react框架支撑tutorial的部分
+3. [Tic Tac Toe](https://codepen.io/gaearon/pen/gWWZgR?editors=0010)
+4. 上节课没有涉及的部分：
+    - ``props``
+    - ``onClick``
+    - ``setState``
+    - ``reRender``
+5. 添加Square和Board
+6. 框架需要添加props的处理
+7. Object.create(null), 创造出来的对象比较干净
+8. 添加onClick事件
+9. 处理onClick有两个思路：一个是在ToyReact.createElement的setAttribute中，addEventListener；第二个是在Component中setAttribute中处理，【实际是在Wrapper中的setAttribute】
+10. 在Wrapper中的setAttribute中添加了对事件的处理。
+11. 对className进行特殊处理，使css可以正常工作
+12. 添加Square的constructor，onClick修改为setState
+13. Component中实现setState，实现state的merge
+14. range是html里面的一个范围，有了range可以按这个范围操作html元素。[相关资料](https://www.jianshu.com/p/ad2f818cc3b0)
+15. 在update中deleteContents()会导致节点range的start/end变化，会产生一个奇怪的bug，目前暂时用一个placeholder来占位，暂时解决这个问题
+16. 这一步核心思想：传一个range进来，range中的内容删除掉，vdom重新进行render，再由vdom重新mountTo(range)。range中的都是实dom。
+17. 生命周期，参考react，willUpdate，didUpdate在update的开始和结束，willMount和didMount在mountTo的开始和结束
+
+
 ## 第三节 虚拟Dom的原理和关键实现
