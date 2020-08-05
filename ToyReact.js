@@ -13,10 +13,20 @@ class ElementWrapper {
     this.root.setAttribute(name, value);
   }
   appendChild(vchild) {
-    vchild.mountTo(this.root);
+    let range = document.createRange();
+    if (this.root.children.length) {
+      range.setStartAfter(this.root.lastChild);
+      range.setEndAfter(this.root.lastChild);
+    } else {
+      range.setStart(this.root, 0);
+      range.setEnd(this.root, 0);
+    }
+    vchild.mountTo(range);
   }
-  mountTo(parent) {
-    parent.appendChild(this.root);
+  mountTo(range) {
+    this.range = range;
+    range.deleteContents();
+    range.insertNode(this.root);
   }
 }
 
@@ -24,8 +34,10 @@ class TextWrapper {
   constructor(content) {
     this.root = document.createTextNode(content);
   }
-  mountTo(parent) {
-    parent.appendChild(this.root);
+  mountTo(range) {
+    this.range = range;
+    range.deleteContents();
+    range.insertNode(this.root);
   }
 }
 
@@ -40,9 +52,14 @@ export class Component {
     this[name] = value;
   }
 
-  mountTo(parent) {
+  mountTo(range) {
+    this.range = range;
+    this.update();
+  }
+  update() {
+    this.range.deleteContents();
     let vdom = this.render();
-    vdom.mountTo(parent);
+    vdom.mountTo(this.range);
   }
 
   appendChild(vchild) {
@@ -107,7 +124,15 @@ export let ToyReact = {
     return element;
   },
   render(vdom, element) {
-    vdom.mountTo(element);
+    let range = document.createRange();
+    if (element.children) {
+      range.setStartAfter(element.lastChild);
+      range.setEndAfter(element.lastChild);
+    } else {
+      range.setStart(element, 0);
+      range.setEnd(element, 0);
+    }
+    vdom.mountTo(range);
     //   element.appendChild(vdom);
   },
 };
