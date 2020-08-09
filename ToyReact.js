@@ -28,6 +28,7 @@ class ElementWrapper {
     this.children.push(vchild);
   }
   mountTo(range) {
+    this.range = range;
     range.deleteContents();
     let element = document.createElement(this.type);
 
@@ -62,6 +63,9 @@ class ElementWrapper {
 class TextWrapper {
   constructor(content) {
     this.root = document.createTextNode(content);
+    this.type = '#text';
+    this.children = [];
+    this.props = Object.create(null);
   }
   mountTo(range) {
     this.range = range;
@@ -75,6 +79,9 @@ export class Component {
     this.children = [];
     this.props = Object.create(null);
   }
+  get type() {
+    return this.constructor.name;
+  }
 
   setAttribute(name, value) {
     this.props[name] = value;
@@ -86,13 +93,81 @@ export class Component {
     this.update();
   }
   update() {
-    // let placeholder = document.createComment('placeholder');
-    // let range = document.createRange();
-    // range.setStart(this.range.endContainer, this.range.endOffset);
-    // range.setEnd(this.range.endContainer, this.range.endOffset);
-    // range.insertNode(placeholder);
     let vdom = this.render();
-    vdom.mountTo(this.range);
+    if (this.vdom) {
+      let isSameNode = (node1, node2) => {
+        if (node1.type !== node2.type) {
+          return false;
+        }
+        for (let name in node1.props) {
+          if (typeof node1.props[name] === 'function' && typeof node2.props[name] === 'function' && node1.props[name].toString() === node2.props[name].toString()) {
+            continue;
+          }
+          if (typeof node1.props[name] === 'object' && typeof node2.props[name] === 'object' && JSON.stringify(node1.props[name]) === JSON.stringify(node2.props[name])) {
+            continue;
+          }
+          if (node1.props[name] !== node2.props[name]) {
+            return false;
+          }
+        }
+        if (
+          Object.keys(node1.props).length !== Object.keys(node2.props).length
+        ) {
+          return false;
+        }
+        return true;
+      };
+
+      let isSameTree = (node1, node2) => {
+        if (!isSameNode(node1, node2)) {
+          return false;
+        }
+        if (node1.children.length !== node2.children.length) {
+          return false;
+        }
+        for (let i = 0; i < node1.children.length; i++) {
+          if (!isSameTree(node1.children[i], node2.children[i])) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      let replace = (newTree, oldTree) => {
+        if (isSameTree(newTree, oldTree)) {
+          return;
+        }
+        if (!isSameNode(newTree, oldTree)) {
+          newTree.mountTo(oldTree.range);
+          // children
+        } else {
+          for (let i = 0; i < newTree.children.length; i ++) {
+            replace(newTree.children[i],oldTree.children[i]);
+          }
+        }
+      }
+
+      replace(vdom, this.vdom);
+      // if (isSameTree(vdom, this.vdom)) {
+      //   return;
+      // }
+
+      // if (!isSameNode(vdom, this.vdom)) {
+      //   vdom.mountTo(this.vdom.range);
+      //   // children
+      // }
+      // else {
+      //   //children
+      // }
+
+      // 比对差异
+
+      console.log('new', vdom);
+      console.log('old', this.vdom);
+    } else {
+      vdom.mountTo(this.range);
+    }
+    this.vdom = vdom;
   }
 
   appendChild(vchild) {
@@ -133,7 +208,7 @@ export let ToyReact = {
     } else {
       element = new type();
     }
-    console.log(arguments);
+    // console.log(arguments);
     for (let name in attributes) {
       // element[name] = attributes[name] // 错误，需要和HTML保持一致
       element.setAttribute(name, attributes[name]);
