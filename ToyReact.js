@@ -1,7 +1,9 @@
+let childrenSymbol = Symbol('children');
 class ElementWrapper {
   constructor(type) {
     this.type = type;
     this.props = Object.create(null);
+    this[childrenSymbol] = [];
     this.children = [];
   }
   setAttribute(name, value) {
@@ -15,6 +17,7 @@ class ElementWrapper {
     // this.root.setAttribute(name, value);
     this.props[name] = value;
   }
+
   appendChild(vchild) {
     // let range = document.createRange();
     // if (this.root.children.length) {
@@ -25,10 +28,27 @@ class ElementWrapper {
     //   range.setEnd(this.root, 0);
     // }
     // vchild.mountTo(range);
-    this.children.push(vchild);
+    this[childrenSymbol].push(vchild);
+    this.children.push(vchild.vdom);
+  }
+  get vdom() {
+    return this;
+    // let vChildren = this.children.map((child) => child.vdom);
+    // return {
+    //   type: this.type,
+    //   props: this.props,
+    //   children: vChildren,
+    // };
   }
   mountTo(range) {
     this.range = range;
+    // let placeholder = document.createComment('placeholder');
+    // let endRange = document.createRange();
+    // endRange.setStart(range.endContainer, range.endOffset);
+    // endRange.setEnd(range.endContainer, range.endOffset);
+    // endRange.insertNode(placeholder);
+
+
     range.deleteContents();
     let element = document.createElement(this.type);
 
@@ -72,6 +92,9 @@ class TextWrapper {
     range.deleteContents();
     range.insertNode(this.root);
   }
+  get vdom() {
+    return this;
+  }
 }
 
 export class Component {
@@ -93,17 +116,26 @@ export class Component {
     this.update();
   }
   update() {
-    let vdom = this.render();
-    if (this.vdom) {
+    let vdom = this.vdom; //this.render();
+    if (this.oldVdom) {
       let isSameNode = (node1, node2) => {
         if (node1.type !== node2.type) {
           return false;
         }
         for (let name in node1.props) {
-          if (typeof node1.props[name] === 'function' && typeof node2.props[name] === 'function' && node1.props[name].toString() === node2.props[name].toString()) {
-            continue;
-          }
-          if (typeof node1.props[name] === 'object' && typeof node2.props[name] === 'object' && JSON.stringify(node1.props[name]) === JSON.stringify(node2.props[name])) {
+          // if (
+          //   typeof node1.props[name] === 'function' &&
+          //   typeof node2.props[name] === 'function' &&
+          //   node1.props[name].toString() === node2.props[name].toString()
+          // ) {
+          //   continue;
+          // }
+          if (
+            typeof node1.props[name] === 'object' &&
+            typeof node2.props[name] === 'object' &&
+            JSON.stringify(node1.props[name]) ===
+              JSON.stringify(node2.props[name])
+          ) {
             continue;
           }
           if (node1.props[name] !== node2.props[name]) {
@@ -141,13 +173,13 @@ export class Component {
           newTree.mountTo(oldTree.range);
           // children
         } else {
-          for (let i = 0; i < newTree.children.length; i ++) {
-            replace(newTree.children[i],oldTree.children[i]);
+          for (let i = 0; i < newTree.children.length; i++) {
+            replace(newTree.children[i], oldTree.children[i]);
           }
         }
-      }
+      };
 
-      replace(vdom, this.vdom);
+      replace(vdom, this.oldVdom);
       // if (isSameTree(vdom, this.vdom)) {
       //   return;
       // }
@@ -159,17 +191,15 @@ export class Component {
       // else {
       //   //children
       // }
-
-      // 比对差异
-
-      console.log('new', vdom);
-      console.log('old', this.vdom);
     } else {
       vdom.mountTo(this.range);
     }
-    this.vdom = vdom;
+    this.oldVdom = vdom;
   }
 
+  get vdom() {
+    return this.render().vdom;
+  }
   appendChild(vchild) {
     this.children.push(vchild);
   }

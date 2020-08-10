@@ -60,3 +60,15 @@ P.S. 开课吧 - 《前段会客厅》，免费的。
 
 
 ## 第三节 虚拟Dom的原理和关键实现
+
+1. 将React版本的Tic Tak Toe代码main.js部分全部复制到项目中
+2. 我们暂时不支持函数式的用法，需要将Square修改为Class声明的
+3. ToyReact在insertChildren时，对null没做特殊处理，添加child不为空和undefined的判断
+4. js中的坑，null也是object！
+5. mergeState时，数组也做一下特殊处理。newState为array时，将oldState更新为array
+6. 开始Vdom的改造
+7. 在ElementWrapper中，不在构造的时候创建dom元素，而在渲染的时候创建dom元素
+8. vdom比较，仅同层比较
+9. 添加了sameNode和sameTree比较
+10. 添加了replace方法，在方法中进行比较，若相同就不更新，replace不同的情况
+11. 最后还是通过placeholder解决渲染问题
